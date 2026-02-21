@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Driver Vigilance Monitoring System</title>
+    <meta property="og:image" content="https://bolt.new/static/og_default.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://bolt.new/static/og_default.png" />
+    <link rel="stylesheet" href="/src/index.css">
+  </head>
+  <body class="bg-gray-900 text-white font-sans antialiased">
+    <div class="min-h-screen flex flex-col">
+      <!-- Header -->
+      <header class="bg-gradient-to-r from-gray-800 to-gray-900 border-b border-gray-700 px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold">Driver Vigilance Monitor</h1>
+              <p class="text-xs text-gray-400">Real-Time AI Monitoring System</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <span class="text-sm text-gray-400">STANDBY</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="flex-1 p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+          <!-- Video Panel (70% - 2 columns) -->
+          <div class="lg:col-span-2 bg-gray-800 rounded-lg border border-gray-700 overflow-hidden shadow-2xl">
+            <div class="relative">
+              <div class="absolute top-4 left-4 z-10 bg-black bg-opacity-70 px-3 py-1 rounded-md">
+                <span class="text-xs font-mono" id="fps-counter">FPS: 0</span>
+              </div>
+              <div class="relative bg-black" style="aspect-ratio: 16/9;">
+                <video id="webcam" autoplay playsinline class="absolute inset-0 w-full h-full object-cover"></video>
+                <canvas id="canvas" class="absolute inset-0 w-full h-full"></canvas>
+                <div id="video-placeholder" class="absolute inset-0 flex items-center justify-center bg-gray-900">
+                  <div class="text-center">
+                    <svg class="w-20 h-20 mx-auto mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                    <p class="text-gray-500">Camera Feed Inactive</p>
+                    <p class="text-xs text-gray-600 mt-2">Press "Start Engine" to begin monitoring</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Control & Metrics Panel (30% - 1 column) -->
+          <div class="space-y-6">
+            <!-- Control Panel -->
+            <div class="bg-gray-800 rounded-lg border border-gray-700 p-6 shadow-xl">
+              <h2 class="text-lg font-bold mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                </svg>
+                Control Panel
+              </h2>
+              <div class="space-y-3">
+                <button id="start-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center space-x-2 shadow-lg">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span>Start Engine</span>
+                </button>
+                <button id="stop-btn" disabled class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center space-x-2 opacity-50 cursor-not-allowed shadow-lg">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
+                  </svg>
+                  <span>Stop Engine</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Metrics Panel -->
+            <div class="bg-gray-800 rounded-lg border border-gray-700 p-6 shadow-xl">
+              <h2 class="text-lg font-bold mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                Real-Time Metrics
+              </h2>
+              <div class="space-y-4">
+                <!-- Driver Status -->
+                <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-gray-400">Driver Status</span>
+                    <div class="w-2 h-2 rounded-full bg-gray-500" id="status-indicator"></div>
+                  </div>
+                  <div class="text-2xl font-bold" id="driver-status">STANDBY</div>
+                </div>
+
+                <!-- Eye Status -->
+                <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+                  <div class="text-sm text-gray-400 mb-2">Eye Status</div>
+                  <div class="flex items-center justify-between">
+                    <span class="font-semibold" id="eye-status">Unknown</span>
+                    <span class="text-xs text-gray-500" id="ear-value">EAR: --</span>
+                  </div>
+                </div>
+
+                <!-- Yawn Status -->
+                <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+                  <div class="text-sm text-gray-400 mb-2">Yawn Status</div>
+                  <div class="flex items-center justify-between">
+                    <span class="font-semibold" id="yawn-status">Unknown</span>
+                    <span class="text-xs text-gray-500" id="mar-value">MAR: --</span>
+                  </div>
+                </div>
+
+                <!-- Head Posture -->
+                <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+                  <div class="text-sm text-gray-400 mb-2">Head Posture</div>
+                  <div class="flex items-center justify-between">
+                    <span class="font-semibold" id="head-status">Unknown</span>
+                    <span class="text-xs text-gray-500" id="head-angle">Angle: --</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Alert Panel -->
+            <div class="bg-red-900 bg-opacity-20 rounded-lg border border-red-700 p-4 shadow-xl hidden" id="alert-panel">
+              <div class="flex items-start space-x-3">
+                <svg class="w-6 h-6 text-red-500 flex-shrink-0 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <div class="flex-1">
+                  <div class="font-bold text-red-400">ALERT</div>
+                  <div class="text-sm text-red-300 mt-1" id="alert-message">No alerts</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Audio Elements -->
+      <audio id="alert-sound" loop>
+        <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+      </audio>
+    </div>
+
+    <script type="module" src="/src/monitoring.js"></script>
+  </body>
+</html>
