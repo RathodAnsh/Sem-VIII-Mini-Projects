@@ -20,5 +20,7 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your computer.
    npm install
 
 ### Start the Development Server
-Once the installation is fully complete, launch the application by running: npm run dev
+Once the installation is fully complete, launch the application by running: 
+```bash
+npm run dev
 
