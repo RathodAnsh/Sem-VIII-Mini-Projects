@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+
+{% block title %}AI Diet Recommendation{% endblock %}
+
+{% block extra_css %}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* MAIN CARD */
+    .recommendation-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    /* HEADER */
+    .recommendation-header {
+        padding: 35px;
+        background: linear-gradient(135deg, #43cea2, #185a9d);
+        color: white;
+    }
+
+    /* PROFILE CARD */
+    .profile-card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 25px;
+    }
+
+    /* BMI */
+    .bmi-category {
+        font-weight: 600;
+        margin-top: 5px;
+    }
+
+    /* NUTRITION */
+    .nutrition-box {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .nutrition-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #43cea2;
+    }
+
+    /* MEAL GRID */
+    .meal-plan {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    /* FLIP CARD */
+    .flip-card {
+        perspective: 1000px;
+        cursor: pointer;
+    }
+
+    .flip-inner {
+        position: relative;
+        width: 100%;
+        height: 230px;
+        transition: transform 0.7s;
+        transform-style: preserve-3d;
+    }
+
+    .flip-card.flipped .flip-inner {
+        transform: rotateY(180deg);
+    }
+
+    .flip-front,
+    .flip-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .flip-front {
+        background: white;
+        border-top: 4px solid #43cea2;
+    }
+
+    .flip-back {
+        background: #e3f2fd;
+        transform: rotateY(180deg);
+    }
+
+    .meal-title {
+        font-weight: 600;
+        color: #185a9d;
+        margin-bottom: 10px;
+    }
+
+    /* ALERT */
+    .disease-alert {
+        padding: 15px;
+        border-radius: 12px;
+        background: #fff3cd;
+        border-left: 5px solid #ffc107;
+    }
+
+    /* TIPS */
+    .tip-card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 12px;
+        text-align: center;
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="recommendation-card">
+
+    <div class="recommendation-header">
+        <h2>🥗 AI Healthy Meal Recommendation System</h2>
+        <p>Personalized nutrition based on BMI</p>
+    </div>
+
+    <div class="p-4">
+
+        <!-- USER PROFILE -->
+        <div class="profile-card">
+            <h4>User Profile</h4>
+            <div class="row">
+
+                <div class="col-md-2">
+                    <label>Age</label>
+                    <input type="text" id="age" class="form-control" value="{{ user_profile.age }}" readonly>
+                </div>
+
+                <div class="col-md-2">
+                    <label>Height (ft)</label>
+                    <input type="text" id="height" class="form-control" value="{{ user_profile.height }}" readonly>
+                </div>
+
+                <div class="col-md-2">
+                    <label>Weight (kg)</label>
+                    <input type="text" id="weight" class="form-control" value="{{ user_profile.weight }}" readonly>
+                </div>
+
+                <div class="col-md-2">
+                    <label>BMI</label>
+                    <input type="text" id="bmi" class="form-control" readonly>
+                    <div id="bmiCategory" class="bmi-category text-muted"></div>
+                </div>
+
+                <div class="col-md-4">
+                    <label>Disease</label>
+                    <input type="text" class="form-control" value="{{ user_profile.disease }}" readonly>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- DISEASE GUIDE -->
+        <div class="profile-card">
+            <h4>Medical Condition Guide</h4>
+            <div class="disease-alert">
+
+                {% if user_profile.disease == "diabetes" %}
+                <p><b>⚠ Diabetes</b></p>
+                <p>Low sugar, high fiber diet recommended</p>
+
+                {% elif user_profile.disease == "hypertension" %}
+                <p><b>⚠ Hypertension</b></p>
+                <p>Low salt, potassium-rich foods</p>
+
+                {% elif user_profile.disease == "obesity" %}
+                <p><b>⚠ Obesity</b></p>
+                <p>Low calorie, high protein meals</p>
+
+                {% else %}
+                <p>✅ Balanced diet recommended</p>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <!-- NUTRITION -->
+        <div class="profile-card">
+            <h4>Daily Nutrition</h4>
+
+            <div class="row text-center">
+
+                <div class="col-md-3">
+                    <div class="nutrition-box">
+                        <div class="nutrition-value">{{ diet_plan.daily_calories|default(1800) }}</div>
+                        Calories
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="nutrition-box">
+                        <div class="nutrition-value">
+                            {{ (diet_plan.daily_calories|default(1800)*0.25/4)|int }}g
+                        </div>
+                        Protein
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="nutrition-box">
+                        <div class="nutrition-value">
+                            {{ (diet_plan.daily_calories|default(1800)*0.5/4)|int }}g
+                        </div>
+                        Carbs
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="nutrition-box">
+                        <div class="nutrition-value">
+                            {{ (diet_plan.daily_calories|default(1800)*0.25/9)|int }}g
+                        </div>
+                        Fat
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- MEAL PLAN WITH FLIP -->
+        <div class="profile-card">
+
+            <h4>Meal Plan (Click to Flip)</h4>
+
+            <div class="meal-plan">
+
+                <!-- BREAKFAST -->
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-inner">
+                        <div class="flip-front">
+                            <div class="meal-title">🍳 Breakfast</div>
+                            {% for item in diet_plan.breakfast %}
+                            <p>• {{ item }}</p>
+                            {% endfor %}
+                        </div>
+                        <div class="flip-back">
+                            <div class="meal-title">🔄 Alternative</div>
+                            {% for item in diet_plan.alt_breakfast %}
+                            <p>• {{ item }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LUNCH -->
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-inner">
+                        <div class="flip-front">
+                            <div class="meal-title">🍛 Lunch</div>
+                            {% for item in diet_plan.lunch %}
+                            <p>• {{ item }}</p>
+                            {% endfor %}
+                        </div>
+                        <div class="flip-back">
+                            <div class="meal-title">🔄 Alternative</div>
+                            {% for item in diet_plan.alt_lunch %}
+                            <p>• {{ item }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DINNER -->
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-inner">
+                        <div class="flip-front">
+                            <div class="meal-title">🌙 Dinner</div>
+                            {% for item in diet_plan.dinner %}
+                            <p>• {{ item }}</p>
+                            {% endfor %}
+                        </div>
+                        <div class="flip-back">
+                            <div class="meal-title">🔄 Alternative</div>
+                            {% for item in diet_plan.alt_dinner %}
+                            <p>• {{ item }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- TIPS -->
+        <div class="profile-card">
+            <h4>Tips</h4>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="tip-card">💧 Drink water</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tip-card">🥗 Eat veggies</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tip-card">🚫 Avoid junk</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tip-card">⚖ Balance diet</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+    function calculateBMI() {
+        let height = document.getElementById("height").value
+        let weight = document.getElementById("weight").value
+
+        let meters = (height * 12) * 0.0254
+        let bmi = (weight / (meters * meters)).toFixed(1)
+
+        document.getElementById("bmi").value = bmi
+
+        let category = ""
+        if (bmi < 18.5) category = "Underweight"
+        else if (bmi < 25) category = "Normal"
+        else if (bmi < 30) category = "Overweight"
+        else category = "Obese"
+
+        document.getElementById("bmiCategory").innerHTML = category
+    }
+
+    function flipCard(card) {
+        card.classList.toggle("flipped");
+    }
+
+    calculateBMI()
+</script>
+
+{% endblock %}
