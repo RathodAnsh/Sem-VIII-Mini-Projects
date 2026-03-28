@@ -172,26 +172,44 @@
 
         <!-- DISEASE GUIDE -->
         <div class="profile-card">
-            <h4>Medical Condition Guide</h4>
+
+            <h4>Medical Condition DietnGuide</h4>
+
             <div class="disease-alert">
 
-                {% if user_profile.disease == "diabetes" %}
+                {% if "diabetes" in user_profile.disease|lower %}
+
                 <p><b>⚠ Diabetes</b></p>
-                <p>Low sugar, high fiber diet recommended</p>
+                <p>❌ Avoid: Sugar, sweets, soft drinks, refined carbs</p>
 
-                {% elif user_profile.disease == "hypertension" %}
+
+                {% elif "hypertension" in user_profile.disease|lower %}
+
                 <p><b>⚠ Hypertension</b></p>
-                <p>Low salt, potassium-rich foods</p>
+                <p>❌ Avoid: Salt, pickles, processed food</p>
 
-                {% elif user_profile.disease == "obesity" %}
+
+                {% elif "heart" in user_profile.disease|lower %}
+
+                <p><b>⚠ Heart Disease</b></p>
+                <p>❌ Avoid: Fried food, oily food, red meat</p>
+
+
+                {% elif "obesity" in user_profile.disease|lower %}
+
                 <p><b>⚠ Obesity</b></p>
-                <p>Low calorie, high protein meals</p>
+                <p>❌ Avoid: Junk food, sugary drinks, high-calorie food</p>
+
 
                 {% else %}
-                <p>✅ Balanced diet recommended</p>
+
+                <p><b>✅ No Major Condition</b></p>
+                <p>Maintain a balanced diet with proper nutrition.</p>
+
                 {% endif %}
 
             </div>
+
         </div>
 
         <!-- NUTRITION -->
